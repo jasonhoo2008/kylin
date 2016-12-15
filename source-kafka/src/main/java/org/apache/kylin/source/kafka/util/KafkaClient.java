@@ -20,15 +20,16 @@ package org.apache.kylin.source.kafka.util;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kylin.common.KylinConfig;
 import org.apache.kylin.cube.CubeInstance;
 import org.apache.kylin.source.kafka.KafkaConfigManager;
 import org.apache.kylin.source.kafka.config.BrokerConfig;
 import org.apache.kylin.source.kafka.config.KafkaClusterConfig;
 import org.apache.kylin.source.kafka.config.KafkaConfig;
+import org.apache.kylin.source.kafka.config.KafkaConsumerProperties;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,49 +40,25 @@ import java.util.Properties;
  */
 public class KafkaClient {
 
+    private static KafkaConsumerProperties kafkaFileConfig = KafkaConsumerProperties.getInstanceFromEnv();
+
     public static KafkaConsumer getKafkaConsumer(String brokers, String consumerGroup, Properties properties) {
         Properties props = constructDefaultKafkaConsumerProperties(brokers, consumerGroup, properties);
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
         return consumer;
     }
 
-    public static KafkaProducer getKafkaProducer(String brokers, Properties properties) {
-        Properties props = constructDefaultKafkaProducerProperties(brokers, properties);
-        KafkaProducer<String, String> producer = new KafkaProducer<String, String>(props);
-        return producer;
-    }
-
-    private static Properties constructDefaultKafkaProducerProperties(String brokers, Properties properties) {
-        Properties props = new Properties();
-        props.put("bootstrap.servers", brokers);
-        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        props.put("acks", "1");
-        props.put("buffer.memory", 33554432);
-        props.put("retries", 0);
-        props.put("batch.size", 16384);
-        props.put("linger.ms", 50);
-        props.put("request.timeout.ms", "30000");
-        if (properties != null) {
-            for (Map.Entry entry : properties.entrySet()) {
-                props.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return props;
-    }
-
     private static Properties constructDefaultKafkaConsumerProperties(String brokers, String consumerGroup, Properties properties) {
         Properties props = new Properties();
-        props.put("bootstrap.servers", brokers);
-        props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        props.put("group.id", consumerGroup);
-        props.put("session.timeout.ms", "30000");
         if (properties != null) {
             for (Map.Entry entry : properties.entrySet()) {
                 props.put(entry.getKey(), entry.getValue());
             }
         }
+        props.put("bootstrap.servers", brokers);
+        props.put("key.deserializer", StringDeserializer.class.getClass().getCanonicalName());
+        props.put("value.deserializer", StringDeserializer.class.getClass().getCanonicalName());
+        props.put("group.id", consumerGroup);
         props.put("enable.auto.commit", "false");
         return props;
     }
@@ -129,7 +106,8 @@ public class KafkaClient {
         final String topic = kafakaConfig.getTopic();
 
         Map<Integer, Long> startOffsets = Maps.newHashMap();
-        try (final KafkaConsumer consumer = KafkaClient.getKafkaConsumer(brokers, cubeInstance.getName(), null)) {
+        Properties kafkaProperties = kafkaFileConfig.getProperties();
+        try (final KafkaConsumer consumer = KafkaClient.getKafkaConsumer(brokers, cubeInstance.getName(), kafkaProperties)) {
             final List<PartitionInfo> partitionInfos = consumer.partitionsFor(topic);
             for (PartitionInfo partitionInfo : partitionInfos) {
                 long latest = getLatestOffset(consumer, topic, partitionInfo.partition());
@@ -147,7 +125,8 @@ public class KafkaClient {
         final String topic = kafakaConfig.getTopic();
 
         Map<Integer, Long> startOffsets = Maps.newHashMap();
-        try (final KafkaConsumer consumer = KafkaClient.getKafkaConsumer(brokers, cubeInstance.getName(), null)) {
+        Properties kafkaProperties = kafkaFileConfig.getProperties();
+        try (final KafkaConsumer consumer = KafkaClient.getKafkaConsumer(brokers, cubeInstance.getName(), kafkaProperties)) {
             final List<PartitionInfo> partitionInfos = consumer.partitionsFor(topic);
             for (PartitionInfo partitionInfo : partitionInfos) {
                 long latest = getEarliestOffset(consumer, topic, partitionInfo.partition());

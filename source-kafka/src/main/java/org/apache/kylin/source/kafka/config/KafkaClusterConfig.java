@@ -47,16 +47,8 @@ public class KafkaClusterConfig extends RootPersistentEntity {
     @JsonBackReference
     private KafkaConfig kafkaConfig;
 
-    public int getBufferSize() {
-        return kafkaConfig.getBufferSize();
-    }
-
     public String getTopic() {
         return kafkaConfig.getTopic();
-    }
-
-    public int getTimeout() {
-        return kafkaConfig.getTimeout();
     }
 
     public List<BrokerConfig> getBrokerConfigs() {
