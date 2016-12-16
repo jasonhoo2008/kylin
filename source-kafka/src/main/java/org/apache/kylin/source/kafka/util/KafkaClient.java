@@ -56,8 +56,8 @@ public class KafkaClient {
             }
         }
         props.put("bootstrap.servers", brokers);
-        props.put("key.deserializer", StringDeserializer.class.getClass().getCanonicalName());
-        props.put("value.deserializer", StringDeserializer.class.getClass().getCanonicalName());
+        props.put("key.deserializer", StringDeserializer.class.getName());
+        props.put("value.deserializer", StringDeserializer.class.getName());
         props.put("group.id", consumerGroup);
         props.put("enable.auto.commit", "false");
         return props;
