@@ -19,7 +19,6 @@
 package org.apache.kylin.source.kafka.hadoop;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Properties;
@@ -35,6 +34,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kylin.common.util.Bytes;
+import org.apache.kylin.source.kafka.config.KafkaConsumerProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,9 +87,7 @@ public class KafkaInputRecordReader extends RecordReader<LongWritable, BytesWrit
         }
         String consumerGroup = conf.get(KafkaFlatTableJob.CONFIG_KAFKA_CONSUMER_GROUP);
 
-        InputStream inputStream = conf.getConfResourceAsInputStream(KafkaFlatTableJob.CONFIG_KAFKA_CONSUMER_PROPERTIES);
-        Properties kafkaProperties = new Properties();
-        kafkaProperties.load(inputStream);
+        Properties kafkaProperties = KafkaConsumerProperties.getProperties(conf);
 
         consumer = org.apache.kylin.source.kafka.util.KafkaClient.getKafkaConsumer(brokers, consumerGroup, kafkaProperties);
 
