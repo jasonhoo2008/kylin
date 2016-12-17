@@ -21,13 +21,17 @@ package org.apache.kylin.source.kafka.config;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kylin.common.KylinConfig;
 import org.apache.kylin.common.KylinConfigCannotInitException;
 import org.apache.kylin.common.util.OptionsHelper;
@@ -72,16 +76,25 @@ public class KafkaConsumerProperties {
     }
 
     public static Properties getProperties(Configuration configuration) {
+        Set<String> configNames = new HashSet<String>();
+        try {
+            configNames = ConsumerConfig.configNames();
+        } catch (Exception e) {
+            // the Kafka configNames api is supported on 0.10.1.0+, in case NoSuchMethodException
+            String[] configNamesArray = ("metric.reporters, metadata.max.age.ms, partition.assignment.strategy, reconnect.backoff.ms," + "sasl.kerberos.ticket.renew.window.factor, max.partition.fetch.bytes, bootstrap.servers, ssl.keystore.type," + " enable.auto.commit, sasl.mechanism, interceptor.classes, exclude.internal.topics, ssl.truststore.password," + " client.id, ssl.endpoint.identification.algorithm, max.poll.records, check.crcs, request.timeout.ms, heartbeat.interval.ms," + " auto.commit.interval.ms, receive.buffer.bytes, ssl.truststore.type, ssl.truststore.location, ssl.keystore.password, fetch.min.bytes," + " fetch.max.bytes, send.buffer.bytes, max.poll.interval.ms, value.deserializer, group.id, retry.backoff.ms,"
+                    + " ssl.secure.random.implementation, sasl.kerberos.kinit.cmd, sasl.kerberos.service.name, sasl.kerberos.ticket.renew.jitter, ssl.trustmanager.algorithm, ssl.key.password, fetch.max.wait.ms, sasl.kerberos.min.time.before.relogin, connections.max.idle.ms, session.timeout.ms, metrics.num.samples, key.deserializer, ssl.protocol, ssl.provider, ssl.enabled.protocols, ssl.keystore.location, ssl.cipher.suites, security.protocol, ssl.keymanager.algorithm, metrics.sample.window.ms, auto.offset.reset").split(",");
+            configNames.addAll(Arrays.asList(configNamesArray));
+        }
+
         Properties result = new Properties();
         for (Iterator<Map.Entry<String, String>> it = configuration.iterator(); it.hasNext();) {
             Map.Entry<String, String> entry = it.next();
             String key = entry.getKey();
             String value = entry.getValue();
-            result.put(key, value);
+            if (configNames.contains(key)) {
+                result.put(key, value);
+            }
         }
-        // TODO: Not filter non-kafka properties, no issue, but some annoying logs
-        // Tried to leverage Kafka API to find non used properties, but the API is
-        // not open to public
         return result;
     }
 
@@ -115,7 +128,7 @@ public class KafkaConsumerProperties {
         return properties;
     }
 
-    public String getKafkaConsumerHadoopJobConf(){
+    public String getKafkaConsumerHadoopJobConf() {
         File kafkaConsumerFile = getKafkaConsumerFile();
         return OptionsHelper.convertToFileURL(kafkaConsumerFile.getAbsolutePath());
     }
