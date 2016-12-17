@@ -20,7 +20,6 @@ package org.apache.kylin.source.kafka;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.PartitionInfo;
