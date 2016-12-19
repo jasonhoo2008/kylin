@@ -59,7 +59,7 @@ public class AppendTrieDictionaryTest extends LocalFileMetadataTestCase {
 
     @Before
     public void setUp() {
-        staticCreateTegit stMetadata();
+        staticCreateTestMetadata();
         System.setProperty("kylin.dictionary.append-entry-size", "50000");
         System.setProperty("kylin.env.hdfs-working-dir", BASE_DIR);
     }
