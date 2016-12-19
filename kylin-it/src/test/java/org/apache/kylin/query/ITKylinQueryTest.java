@@ -65,9 +65,6 @@ public class ITKylinQueryTest extends KylinTestBase {
         joinType = "inner";
 
         setupAll();
-
-        RemoveBlackoutRealizationsRule.blackList.add("CUBE[name=test_kylin_cube_with_view_left_join_empty]");
-        RemoveBlackoutRealizationsRule.blackList.add("CUBE[name=test_kylin_cube_with_view_inner_join_empty]");
     }
 
     @AfterClass
