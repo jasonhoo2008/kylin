@@ -121,7 +121,7 @@
       "expression" : "COUNT_DISTINCT",
       "parameter" : {
         "type" : "column",
-        "value" : "USER_ID",
+        "value" : "ORDER_ID",
         "next_parameter" : null
       },
       "returntype" : "bitmap"
@@ -210,7 +210,7 @@
     "dependent_measure_ref" : null
   } ],
   "dictionaries": [ {
-    "column": "USER_ID",
+    "column": "ORDER_ID",
     "builder": "org.apache.kylin.dict.GlobalDictionaryBuilder"
   } ],
   "rowkey" : {
