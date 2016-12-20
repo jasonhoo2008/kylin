@@ -187,12 +187,12 @@
       "returntype" : "raw"
     }
   }, {
-    "name" : "ITEM_COUNT_RAW",
+    "name" : "CAL_DT_RAW",
     "function" : {
       "expression" : "RAW",
       "parameter" : {
         "type" : "column",
-        "value" : "ITEM_COUNT"
+        "value" : "CAL_DT"
       },
       "returntype" : "raw"
     }
@@ -254,7 +254,7 @@
       "name" : "f3",
       "columns" : [ {
         "qualifier" : "m",
-        "measure_refs" : [ "TEST_EXTENDED_COLUMN", "TRANS_ID_RAW", "PRICE_RAW", "ITEM_COUNT_RAW" ]
+        "measure_refs" : [ "TEST_EXTENDED_COLUMN", "TRANS_ID_RAW", "PRICE_RAW", "CAL_DT_RAW" ]
       } ]
     } ]
   },
