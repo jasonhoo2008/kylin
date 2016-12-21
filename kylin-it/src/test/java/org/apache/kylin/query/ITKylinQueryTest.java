@@ -149,7 +149,7 @@ public class ITKylinQueryTest extends KylinTestBase {
     @Test
     public void testSingleRunQuery() throws Exception {
 
-        String queryFileName = getQueryFolderPrefix() + "src/test/resources/query/sql_distinct_precisely/query01.sql";
+        String queryFileName = getQueryFolderPrefix() + "src/test/resources/query/sql_limit/query01.sql";
 
         File sqlFile = new File(queryFileName);
         if (sqlFile.exists()) {
@@ -321,18 +321,10 @@ public class ITKylinQueryTest extends KylinTestBase {
 
     @Test
     public void testLimitEnabled() throws Exception {
-        try {
-            //other cubes have strange aggregation groups
-            RemoveBlackoutRealizationsRule.whiteList.add("CUBE[name=test_kylin_cube_with_slr_empty]");
-
-            List<File> sqlFiles = getFilesFromFolder(new File(getQueryFolderPrefix() + "src/test/resources/query/sql_limit"), ".sql");
-            for (File sqlFile : sqlFiles) {
-                runSQL(sqlFile, false, false);
-                assertTrue(checkFinalPushDownLimit());
-            }
-
-        } finally {
-            RemoveBlackoutRealizationsRule.whiteList.remove("CUBE[name=test_kylin_cube_with_slr_empty]");
+        List<File> sqlFiles = getFilesFromFolder(new File(getQueryFolderPrefix() + "src/test/resources/query/sql_limit"), ".sql");
+        for (File sqlFile : sqlFiles) {
+            runSQL(sqlFile, false, false);
+            assertTrue(checkFinalPushDownLimit());
         }
     }
 
@@ -378,7 +370,7 @@ public class ITKylinQueryTest extends KylinTestBase {
     
     @Test
     public void testSelectStarColumnCount() throws Exception {
-        execAndCompColumnCount("select * from test_kylin_fact limit 10", 9);
-        execAndCompColumnCount("select * from test_kylin_fact", 9);
+        execAndCompColumnCount("select * from test_kylin_fact limit 10", 12);
+        execAndCompColumnCount("select * from test_kylin_fact", 12);
     }
 }
