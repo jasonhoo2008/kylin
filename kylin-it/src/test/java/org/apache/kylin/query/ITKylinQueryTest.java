@@ -62,7 +62,7 @@ public class ITKylinQueryTest extends KylinTestBase {
         priorities.put(RealizationType.INVERTED_INDEX, 0);
         Candidate.setPriorities(priorities);
 
-        joinType = "inner";
+        joinType = "left";
 
         setupAll();
     }
@@ -149,11 +149,11 @@ public class ITKylinQueryTest extends KylinTestBase {
     @Test
     public void testSingleRunQuery() throws Exception {
 
-        String queryFileName = getQueryFolderPrefix() + "src/test/resources/query/sql_subquery/query02.sql";
+        String queryFileName = getQueryFolderPrefix() + "src/test/resources/query/sql_distinct_precisely/query01.sql";
 
         File sqlFile = new File(queryFileName);
         if (sqlFile.exists()) {
-            runSQL(sqlFile, true, true);
+            //runSQL(sqlFile, true, true);
             runSQL(sqlFile, true, false);
         }
     }

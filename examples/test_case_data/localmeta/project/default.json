@@ -10,7 +10,7 @@
     {
       "name": "ci_inner_join_cube",
       "type": "CUBE",
-      "realization": "ci_left_join_cube"
+      "realization": "ci_inner_join_cube"
     },
     {
       "name": "test_streaming_table_cube",
